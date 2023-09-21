@@ -26,7 +26,7 @@ const dummyTasks = [
   {
     id: 3,
     title: "Task 3",
-    description: "Description for Task 3",
+description: "Description for Task 3",
     status: "Completed",
   },
   // Add more tasks as needed
