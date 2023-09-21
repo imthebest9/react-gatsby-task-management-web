@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Typography,
@@ -9,6 +9,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import axios from 'axios';
 
 interface Task {
   id: number;
@@ -23,7 +24,7 @@ const TaskComponent: React.FC<{
   onDelete: (taskId: number) => void;
 }> = ({ task, onDelete }) => {
   return (
-    <Paper elevation={3} style={{ padding: '16px', marginBottom: '16px' }}>
+    <Paper elevation={3} style={{ padding: `16px`, marginBottom: `16px` }}>
       <Typography variant="h6">{task.title}</Typography>
       <Typography variant="body2">Description: {task.description}</Typography>
       <Typography variant="body2">Due Date: {task.dueDate}</Typography>
@@ -39,32 +40,61 @@ const Tasks: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState<Task>({
     id: 0,
-    title: '',
-    description: '',
-    dueDate: '',
-    status: 'To Do',
+    title: ``,
+    description: ``,
+    dueDate: ``,
+    status: `To Do`,
   });
 
-  const [filterStatus, setFilterStatus] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('');
+  const [filterStatus, setFilterStatus] = useState<string>(``);
+  const [sortBy, setSortBy] = useState<string>(``);
+
+  useEffect(() => {
+    // Fetch tasks from the API when the component mounts
+    axios
+      .get(`https://localhost:7217/api/TaskItem`)
+      .then((response) => {
+        setTasks(response.data); // Assuming the API returns an array of tasks
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(`Error fetching tasks:`, error);
+      });
+  }, []);
 
   const handleCreateTask = () => {
-    // Create a new task and add it to the tasks array
-    const task: Task = { ...newTask, id: Date.now() };
-    setTasks([...tasks, task]);
-    setNewTask({
-      id: 0,
-      title: '',
-      description: '',
-      dueDate: '',
-      status: 'To Do',
-    });
+    // Create a new task and add it to the API
+    axios
+      .post(`https://localhost:7217/api/TaskItem`, newTask)
+      .then((response) => {
+        // Assuming the API returns the created task
+        setTasks([...tasks, response.data]);
+        setNewTask({
+          id: 0,
+          title: ``,
+          description: ``,
+          dueDate: ``,
+          status: `To Do`,
+        });
+      })
+      .catch((error) => {
+        console.error(`Error creating task:`, error);
+      });
   };
 
   const handleDeleteTask = (taskId: number) => {
-    // Remove a task by filtering out the task with the matching ID
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
+    // Remove a task from the API by making a delete request
+    axios
+      .delete(`https://localhost:7217/api/tasks/${taskId}`)
+      .then(() => {
+        // Update the tasks state after deletion
+        const updatedTasks = tasks.filter((task) => task.id !== taskId);
+        setTasks(updatedTasks);
+        console.log(updatedTasks);
+      })
+      .catch((error) => {
+        console.error(`Error deleting task:`, error);
+      });
   };
 
   // Apply filter based on status
@@ -74,9 +104,9 @@ const Tasks: React.FC = () => {
 
   // Apply sorting based on sortBy
   const sortedTasks = [...filteredTasks].sort((a, b) => {
-    if (sortBy === 'dueDate') {
+    if (sortBy === `dueDate`) {
       return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-    } else if (sortBy === 'status') {
+    } else if (sortBy === `status`) {
       return a.status.localeCompare(b.status);
     }
     return 0;
@@ -84,7 +114,7 @@ const Tasks: React.FC = () => {
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h5" style={{ marginTop: '20px' }}>
+      <Typography variant="h5" style={{ marginTop: `20px` }}>
         Task Management
       </Typography>
       <TextField
@@ -93,7 +123,7 @@ const Tasks: React.FC = () => {
         fullWidth
         value={newTask.title}
         onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: `10px` }}
       />
       <TextField
         label="Description"
@@ -103,7 +133,7 @@ const Tasks: React.FC = () => {
         onChange={(e) =>
           setNewTask({ ...newTask, description: e.target.value })
         }
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: `10px` }}
       />
       <TextField
         label="Due Date"
@@ -112,7 +142,7 @@ const Tasks: React.FC = () => {
         type="date"
         value={newTask.dueDate}
         onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: `10px` }}
       />
       <TextField
         select
@@ -121,7 +151,7 @@ const Tasks: React.FC = () => {
         fullWidth
         value={newTask.status}
         onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: `10px` }}
       >
         <MenuItem value="To Do">To Do</MenuItem>
         <MenuItem value="In Progress">In Progress</MenuItem>
@@ -132,7 +162,7 @@ const Tasks: React.FC = () => {
         color="primary"
         fullWidth
         onClick={handleCreateTask}
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: `10px` }}
       >
         Create Task
       </Button>
@@ -143,7 +173,7 @@ const Tasks: React.FC = () => {
         fullWidth
         value={filterStatus}
         onChange={(e) => setFilterStatus(e.target.value)}
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: `10px` }}
       >
         <MenuItem value="">All</MenuItem>
         <MenuItem value="To Do">To Do</MenuItem>
@@ -157,13 +187,13 @@ const Tasks: React.FC = () => {
         fullWidth
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value)}
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: `10px` }}
       >
         <MenuItem value="">None</MenuItem>
         <MenuItem value="dueDate">Due Date</MenuItem>
         <MenuItem value="status">Status</MenuItem>
       </TextField>
-      <div style={{ marginTop: '20px' }}>
+      <div style={{ marginTop: `20px` }}>
         {sortedTasks.map((task) => (
           <TaskComponent
             key={task.id}

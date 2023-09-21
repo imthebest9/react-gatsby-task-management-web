@@ -1,5 +1,5 @@
 // src/pages/dashboard.tsx
-import React from "react";
+import React from 'react';
 import {
   Container,
   Typography,
@@ -7,27 +7,27 @@ import {
   Grid,
   Card,
   CardContent,
-} from "@mui/material";
+} from '@mui/material';
 
 // Sample dummy task data
 const dummyTasks = [
   {
     id: 1,
-    title: "Task 1",
-    description: "Description for Task 1",
-    status: "To Do",
+    title: `Task 1`,
+    description: `Description for Task 1`,
+    status: `To Do`,
   },
   {
     id: 2,
-    title: "Task 2",
-    description: "Description for Task 2",
-    status: "In Progress",
+    title: `Task 2`,
+    description: `Description for Task 2`,
+    status: `In Progress`,
   },
   {
     id: 3,
-    title: "Task 3",
-description: "Description for Task 3",
-    status: "Completed",
+    title: `Task 3`,
+    description: `Description for Task 3`,
+    status: `Completed`,
   },
   // Add more tasks as needed
 ];
@@ -35,9 +35,10 @@ description: "Description for Task 3",
 const Dashboard: React.FC = () => {
   // Calculate task statistics based on the dummy data
   const taskStatistics = {
-    todo: dummyTasks.filter((task) => task.status === "To Do").length,
-    inProgress: dummyTasks.filter((task) => task.status === "In Progress").length,
-    completed: dummyTasks.filter((task) => task.status === "Completed").length,
+    todo: dummyTasks.filter((task) => task.status === `To Do`).length,
+    inProgress: dummyTasks.filter((task) => task.status === `In Progress`)
+      .length,
+    completed: dummyTasks.filter((task) => task.status === `Completed`).length,
   };
 
   return (
@@ -81,7 +82,7 @@ const Dashboard: React.FC = () => {
       </Grid>
 
       {/* User's Tasks */}
-      <Paper elevation={3} style={{ padding: "16px", marginTop: "20px" }}>
+      <Paper elevation={3} style={{ padding: `16px`, marginTop: `20px` }}>
         <Typography variant="h5">Your Tasks</Typography>
         <ul>
           {dummyTasks.map((task) => (
